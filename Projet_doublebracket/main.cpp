@@ -1,24 +1,42 @@
 #include <iostream>
+#include <vector>
+#include <string>
+
 
 using namespace std;
 
 int main() {
-    bool running {true}; // variable qui fait tourner la boucle du jeu
-    unsigned jeu {3}; // variable à modifier pour choisir le jeu + 3 car rien n'y est attaché
+    vector<string> participants(64); // Vecteur pour stocker les 64 participants
+    vector<string> matchOrdre(126); // Stockage de tous les participants par match, utile pour fonction match
 
-    while (running) {
-        cout << "Bonjour et bienvenu sur cette plateforme multijeu à tournoi" << endl;
-        cout << "-------------------------------------------------" << endl;
-        cout << "Quel jeu voulez-vous choisir : " << endl;
-        cout << "1. Chifumi" << endl;
-        cout << "2. Devine le bon nombre" << endl;
-
-
-
-
-
-
+    for (unsigned i {0} ; i < 64 ; i++) { // Defini les participants de 01 à 64
+        if (i < 9) {
+            participants[i] = '0' + to_string(i+1);
+        }else {
+            participants[i] = to_string(i+1);
         }
+    }
+
+    unsigned o {0};
+    for (unsigned i {0} ; i < 32 ; i++) {
+        matchOrdre[i] = participants[o] + participants[o+1];
+        o = o + 2;
+    }
+
+    for (unsigned i {0} ; i < 32 ; i++) {
+        cout << matchOrdre[i] << endl;
+
+    }
+
+
+
+
+
+
+
+
+
+
 
     return 0;
 }
