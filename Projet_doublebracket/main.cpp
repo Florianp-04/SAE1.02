@@ -4,89 +4,111 @@
 
 using namespace std;
 
-struct participants { // structure participants
-    string name;
-    unsigned num;
-    unsigned match; // permet de vérifier que le participant participe bien au match (comparer avec var struct match)
-    string place; // pour faire le classement final au fur et à mesure (loose = place fixée)
-    unsigned score; // pour stopper le BO3 au bout de 2 win contre 0
-    bool win; // var changer quand joueur gagne
-};
-
-struct match { // struct pour les match
-    unsigned num; // stockage
-    unsigned nump1; // id du p1
-    unsigned nump2; // id du P2
-};
-
-void win(participants & p1, participants & p2) {
-    if ((p1.score == 2 && p2.score == 0) ||
-        (p1.score == 3 && (p2.score == 2 || p2.score == 1))) {
-        p1.win = true;
-        p1.score = 0;
-        p2.score = 0;
-    }
-
-    if ((p2.score == 2 && p1.score == 0) ||
-        (p2.score == 3 && (p1.score == 2 || p1.score == 1))){
-        p2.win = true;
-        p1.score = 0;
-        p2.score = 0;
-    }
+size_t match(int P1, int P2) {
+    return P2;
 }
 
-void matchBO3(match & nextRoundWin, match & nextRoundLoose, participants p1, participants p2) {
-    win(p1, p2);
-    if (p1.win) { // si p1 gagne
-        if (nextRoundWin.nump1 == 0) // si slot 1 est libre
-            nextRoundWin.nump1 = p1.num;
-        else
-            nextRoundWin.nump2 = p1.num; // sinon slot 2
-        if (nextRoundLoose.nump1 == 0) // si slot 1 est libre
-            nextRoundLoose.nump1 = p2.num;
-        else
-            nextRoundLoose.nump2 = p2.num; // sinon slot 2
+int main () {
+    vector <size_t> winnerBracket(64);
+    for ( size_t i {0} ; i < winnerBracket.size() ; ++i) {
+        winnerBracket[i] = i + 1;
     }
-    if (p1.win) { // si p1 gagne
-        if (nextRoundWin.nump1 == 0) // si slot 1 est libre
-            nextRoundWin.nump1 = p2.num;
-        else
-            nextRoundWin.nump2 = p2.num; // sinon slot 2
-        if (nextRoundLoose.nump1 == 0) // si slot 1 est libre
-            nextRoundLoose.nump1 = p1.num;
-        else
-            nextRoundLoose.nump2 = p1.num; // sinon slot 2
+    vector <size_t> looserBracket;
+    vector <size_t> indStockage;
+    vector <size_t> indStockageInter;
+    size_t o {0};
+    size_t indWinner;
+    size_t indLooser;
+    size_t tour {1};
+    
+    
+    while (winnerBracket.size() > 1 || looserBracket.size() > 1) {
+        if (looserBracket.size() == 0) { // STARTER = 32 MATCH WINNER UNIQUEMENT
+            cout << "STARTER WINNER 32 MATCH >-------------<" << endl;
+            for ( size_t i {1} ; i < winnerBracket.size() ; i=i+2) {
+                indWinner = match(winnerBracket[i-1], winnerBracket[i]);
+                indLooser = (indWinner == winnerBracket[i-1]) ? i : i-1;
+                indStockage.push_back(indLooser);
+                looserBracket.push_back(winnerBracket[indStockage[o]]);
+                ++o;
+                cout << "#Match entre : " << winnerBracket[i-1] << " ET " << winnerBracket[i] << endl;
+                cout << "Gagnant ---> " << indWinner << endl;
+                cout << "Perdant -> " << winnerBracket[indLooser] << endl;
+            } 
+            o = 0;
+            // MATCH WINNERBRACKET + AJOUT DANS LOOSERBRACKET
+            
+            for ( size_t i = indStockage.size() ; i > 0 ; --i) {
+                winnerBracket.erase(winnerBracket.begin() + indStockage[i-1]);
+            } 
+            indStockage.clear();
+            // SUPPRESSION DANS WINNERBRACKET
+        }
+        
+        //** ---------------------------------------------- **/
+        // DEBUT BOUCLE TOURNOI
+
+        cout << "TOUR <-------------> " << tour << endl;
+        cout << "LOOSERBRACKET 1 >-------------<" << endl;
+        
+        if (winnerBracket.size() != 1) {
+            for ( size_t i {1} ; i < looserBracket.size() ; i = i+2) {
+                indWinner = match(looserBracket[i-1], looserBracket[i]);
+                indLooser = (indWinner == looserBracket[i-1]) ? i : i-1;
+                indStockage.push_back(indLooser);
+                
+                cout << "#Match entre : " << looserBracket[i-1] << " ET " << looserBracket[i] << endl;
+                cout << "Gagnant ---> " << indWinner << endl;
+                cout << "Perdant -> " << looserBracket[indLooser] << endl;
+            }
+            // MATCH LOOSERBRACKET
+            
+            cout << "WINNERBRACKET >-------------<" << endl;
+            
+            for ( size_t i {1} ; i < winnerBracket.size() ; i=i+2) {
+                indWinner = match(winnerBracket[i-1], winnerBracket[i]);
+                indLooser = (indWinner == winnerBracket[i-1]) ? i : i-1;
+                indStockageInter.push_back(indLooser);
+                looserBracket[indStockage[o]] = winnerBracket[indStockageInter[o]];
+                ++o;
+                cout << "#Match entre : " << winnerBracket[i-1] << " ET " << winnerBracket[i] << endl;
+                cout << "Gagnant ---> " << indWinner << endl;
+                cout << "Perdant -> " << winnerBracket[indLooser] << endl;
+            }
+            o = 0;
+            indStockage.clear();
+            // MATCH WINNERBRACKET + AJOUT A PLACE DE PERDANT LOOSERBRACKET
+            
+            for ( size_t i = indStockageInter.size() ; i > 0 ; --i) {
+                    winnerBracket.erase(winnerBracket.begin() + indStockageInter[i-1]);
+            } 
+            indStockageInter.clear();
+            // SUPPRESION DANS WINNERBRACKET
+        }
+        cout << "LOOSERBRACKET 2 >-------------<" << endl;
+        for ( size_t i {1} ; i < looserBracket.size() ; i = i+2) {
+            indWinner = match(looserBracket[i-1], looserBracket[i]);
+            indLooser = (indWinner == looserBracket[i-1]) ? i : i-1;
+            indStockage.push_back(indLooser);
+            cout << "#Match entre : " << looserBracket[i-1] << " ET " << looserBracket[i] << endl;
+            cout << "Gagnant ---> " << indWinner << endl;
+            cout << "Perdant -> " << looserBracket[indLooser] << endl;
+        } 
+        // MATCH LOOSERBRACKET 2
+        
+        for ( size_t i = indStockage.size() ; i > 0 ; --i) {
+                looserBracket.erase(looserBracket.begin() + indStockage[i-1]);
+        }
+        indStockage.clear();
+        // SUPPRESSION PERDANT LOOSERBRACKET
+
+        ++tour;
+        
     }
+    cout << endl;
+    cout << "GRANDE FINALE >>-------------<< " << endl;
+    cout << "GRAND Gagnant ---> " << match(winnerBracket[0], looserBracket[0]) << endl;
 
-
-}
-
-int main() {
-
-    vector <participants> P(64);
-    vector <match> match(126);
-
-    for (unsigned i {0} ; i < 64 ; i++) { // declare les 64 participants
-        P[i].name = to_string(i+1);
-        P[i].num = i;
-    }
-
-    for (unsigned i {0} ; i < 126 ; i++) { // declare les 126 match
-        match[i].num = i+1;
-    }
-
-    for (unsigned i {0}, o {0} ; i < 32 ; i++, o = o + 2) { // Donne l'id de chaque P1 et P2 d'un match, à chaque premier 32 match
-        match[i].nump1 = P[o].num;
-        match[i].nump2 = P[o+1].num;
-    }
-
-    for (unsigned i {0} ; i < 32 ; i++) { // test
-        cout << "MATCH : " << match[i].num << endl;
-        cout << "P1 : " << match[i].nump1 << endl;
-        cout << "P2 : " << match[i].nump2 << endl;
-    }
-
-
-
+    
     return 0;
 }
