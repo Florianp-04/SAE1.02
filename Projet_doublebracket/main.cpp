@@ -4,8 +4,53 @@
 
 using namespace std;
 
-size_t match(int P1, int P2) {
-    return P2;
+size_t PFC (size_t p1, size_t p2) {
+    string entreeP1;
+    string entreeP2;
+    while (true) {
+        cout << "P1 joue" << endl;
+        cin >> entreeP1;
+        cout << "P2 joue" << endl;
+        cin >> entreeP2;
+        if (entreeP1 == entreeP2){
+            cout << "Egalité" << endl;
+            continue;
+        }else if ((entreeP1 == "pierre" && entreeP2 == "ciseaux") ||
+            (entreeP1 == "feuille" && entreeP2 == "pierre") ||
+            (entreeP1 == "ciseaux" && entreeP2 == "feuille")) {
+            return p1;
+        }else {
+            return p2;
+        }
+    }
+}
+
+size_t match(size_t P1, size_t P2) {
+    size_t scoreP1 {0};
+    size_t scoreP2 {0};
+    size_t gamePFC;
+    bool runGamePFC {true};
+
+    while (true) {
+        if ((scoreP1 == 2) && (scoreP2 == 0 || scoreP2 == 1)) {
+            return P1;
+        }else if ((scoreP2 == 2) && (scoreP1 == 0 || scoreP1 == 1)) {
+            return P2;
+        }
+        if (runGamePFC) {
+            gamePFC = PFC(P1, P2);
+            if (P1 == gamePFC){
+                // ++scoreP1;
+                scoreP1 = 2;
+                runGamePFC = false;
+                continue;
+            }else {
+                // ++scoreP2;
+                runGamePFC = false;
+                continue;
+            }
+        }
+    }
 }
 
 int main () {
