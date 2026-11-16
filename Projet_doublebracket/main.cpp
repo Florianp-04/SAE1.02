@@ -11,7 +11,7 @@ size_t PFC (size_t p1, size_t p2) {
         getline(cin >> ws, entreeP1); // P1 JOUE EN PREMIER 
         getline(cin >> ws, entreeP2); // P2 JOUE SECOND
         if (entreeP1 == entreeP2){
-            cout << "Egalité" << endl;
+            cerr << "Egalité" << endl;
             continue;
         }else if ((entreeP1 == "pierre" && entreeP2 == "ciseaux") ||
             (entreeP1 == "feuille" && entreeP2 == "pierre") ||
@@ -31,7 +31,7 @@ size_t POF (size_t p1, size_t p2) {
     // FACE GAGNERA TOUJOURS
     // P1 JOUERA TOUJOURS EN PREMIER, DONC IL EST RESPONSABLE DE LA VICTOIRE
     string entreeP1;
-    cout << "P1 doit choisir Pile ou Face : " << endl;
+    //cout << "P1 doit choisir Pile ou Face : " << endl;
     cin >> entreeP1;
     if (entreeP1 == "face") {
         return p1;
@@ -40,13 +40,34 @@ size_t POF (size_t p1, size_t p2) {
     }
 }
 
+size_t getTheNumber (size_t p1, size_t p2) {
+    size_t number {3};
+    size_t entreep1;
+    size_t entreep2;
+    while (true) {
+        //cout << "P1 choisit son nombre" << endl;
+        cin >> entreep1;
+        //cout << "P2 choisit son nombre" << endl;
+        cin >> entreep2;
+        if (entreep1 == entreep2) 
+            continue;
+            // DANS UN VRAI JEU FONCTIONNEL, LE NUMBER CHANGE DE FAÇON ALÉATOIRE
+        if (entreep1 == number)
+            return p1;
+        else
+            return p2;
+    }
+}
+
 size_t match(size_t P1, size_t P2) {
     size_t scoreP1 {0};
     size_t scoreP2 {0};
     size_t gamePFC;
     size_t gamePOF;
+    size_t gameGTN;
     bool runGamePFC {true};
     bool runGamePOF {true};
+    bool runGameGTN {true};
 
     while (true) {
         if ((scoreP1 == 2) && (scoreP2 == 0 || scoreP2 == 1)) {
@@ -78,7 +99,18 @@ size_t match(size_t P1, size_t P2) {
                 continue;
             }
         }
-        
+        if (runGameGTN) {
+            gameGTN = getTheNumber(P1, P2);
+            if (P1 == gameGTN){
+                ++scoreP1;
+                runGameGTN = false;
+                continue;
+            }else {
+                ++scoreP2;
+                runGameGTN = false;
+                continue;
+            }
+        } 
     }
 }
 
@@ -95,19 +127,18 @@ int main () {
     size_t indLooser;
     size_t tour {1};
     
-    
     while (winnerBracket.size() > 1 || looserBracket.size() > 1) {
         if (looserBracket.size() == 0) { // STARTER = 32 MATCH WINNER UNIQUEMENT
-            cout << "STARTER WINNER 32 MATCH >-------------<" << endl;
+            //cout << "STARTER WINNER 32 MATCH >-------------<" << endl;
             for ( size_t i {1} ; i < winnerBracket.size() ; i=i+2) {
                 indWinner = match(winnerBracket[i-1], winnerBracket[i]);
                 indLooser = (indWinner == winnerBracket[i-1]) ? i : i-1;
                 indStockage.push_back(indLooser);
                 looserBracket.push_back(winnerBracket[indStockage[o]]);
                 ++o;
-                cout << "#Match entre : " << winnerBracket[i-1] << " ET " << winnerBracket[i] << endl;
-                cout << "Gagnant ---> " << indWinner << endl;
-                cout << "Perdant -> " << winnerBracket[indLooser] << endl;
+                //cout << "#Match entre : " << winnerBracket[i-1] << " ET " << winnerBracket[i] << endl;
+                //cout << "Gagnant ---> " << indWinner << endl;
+                //cout << "Perdant -> " << winnerBracket[indLooser] << endl;
             } 
             o = 0;
             // MATCH WINNERBRACKET + AJOUT DANS LOOSERBRACKET
@@ -122,8 +153,8 @@ int main () {
         //** ---------------------------------------------- **/
         // DEBUT BOUCLE TOURNOI
 
-        cout << "TOUR <-------------> " << tour << endl;
-        cout << "LOOSERBRACKET 1 >-------------<" << endl;
+        //cout << "TOUR <-------------> " << tour << endl;
+        //cout << "LOOSERBRACKET 1 >-------------<" << endl;
         
         if (winnerBracket.size() != 1) {
             for ( size_t i {1} ; i < looserBracket.size() ; i = i+2) {
@@ -131,13 +162,13 @@ int main () {
                 indLooser = (indWinner == looserBracket[i-1]) ? i : i-1;
                 indStockage.push_back(indLooser);
                 
-                cout << "#Match entre : " << looserBracket[i-1] << " ET " << looserBracket[i] << endl;
-                cout << "Gagnant ---> " << indWinner << endl;
-                cout << "Perdant -> " << looserBracket[indLooser] << endl;
+                //cout << "#Match entre : " << looserBracket[i-1] << " ET " << looserBracket[i] << endl;
+                //cout << "Gagnant ---> " << indWinner << endl;
+                //cout << "Perdant -> " << looserBracket[indLooser] << endl;
             }
             // MATCH LOOSERBRACKET
             
-            cout << "WINNERBRACKET >-------------<" << endl;
+            //cout << "WINNERBRACKET >-------------<" << endl;
             
             for ( size_t i {1} ; i < winnerBracket.size() ; i=i+2) {
                 indWinner = match(winnerBracket[i-1], winnerBracket[i]);
@@ -145,9 +176,9 @@ int main () {
                 indStockageInter.push_back(indLooser);
                 looserBracket[indStockage[o]] = winnerBracket[indStockageInter[o]];
                 ++o;
-                cout << "#Match entre : " << winnerBracket[i-1] << " ET " << winnerBracket[i] << endl;
-                cout << "Gagnant ---> " << indWinner << endl;
-                cout << "Perdant -> " << winnerBracket[indLooser] << endl;
+                //cout << "#Match entre : " << winnerBracket[i-1] << " ET " << winnerBracket[i] << endl;
+                //cout << "Gagnant ---> " << indWinner << endl;
+                //cout << "Perdant -> " << winnerBracket[indLooser] << endl;
             }
             o = 0;
             indStockage.clear();
@@ -159,14 +190,14 @@ int main () {
             indStockageInter.clear();
             // SUPPRESION DANS WINNERBRACKET
         }
-        cout << "LOOSERBRACKET 2 >-------------<" << endl;
+        //cout << "LOOSERBRACKET 2 >-------------<" << endl;
         for ( size_t i {1} ; i < looserBracket.size() ; i = i+2) {
             indWinner = match(looserBracket[i-1], looserBracket[i]);
             indLooser = (indWinner == looserBracket[i-1]) ? i : i-1;
             indStockage.push_back(indLooser);
-            cout << "#Match entre : " << looserBracket[i-1] << " ET " << looserBracket[i] << endl;
-            cout << "Gagnant ---> " << indWinner << endl;
-            cout << "Perdant -> " << looserBracket[indLooser] << endl;
+            //cout << "#Match entre : " << looserBracket[i-1] << " ET " << looserBracket[i] << endl;
+            //cout << "Gagnant ---> " << indWinner << endl;
+            //cout << "Perdant -> " << looserBracket[indLooser] << endl;
         } 
         // MATCH LOOSERBRACKET 2
         
@@ -175,15 +206,13 @@ int main () {
         }
         indStockage.clear();
         // SUPPRESSION PERDANT LOOSERBRACKET
-
         ++tour;
-        
     }
-    cout << endl;
-    cout << "GRANDE FINALE >>-------------<< " << endl;
+    //cout << endl;
+    //cout << "GRANDE FINALE >>-------------<< " << endl;
     indWinner = match(winnerBracket[0], looserBracket[0]);
     cout << "GRAND Gagnant ---> " << indWinner << endl;
-
-    
     return 0;
 }
+
+
